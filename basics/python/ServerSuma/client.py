@@ -18,7 +18,6 @@ msj = [ b"suma", b"3", b"4"]
 s.send_multipart(msj)
 
 
-
 res = s.recv()
 
 print("respuesta del servidor", res.decode('utf-8'))
