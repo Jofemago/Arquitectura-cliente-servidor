@@ -10,13 +10,11 @@ class ServerFile(Server):
     def __init__(self, ip_puerto, chunck = 1000000):
 
         Server.__init__(self, ip_puerto)
-        self.op = {'getChunk': self.sendChunk , 'exists?':self.exists, 'upload': self.upload}
+        self.op = {'getChunk': self.sendChunk , 'exists?':self.exists, 'upload': self.upload, "download": self.download}
         self.chunck = str(chunck)
         self.path = self.makeDirWork()
         self.run() #corro el servidor
         
-
-
     def makeDirWork(self):
         "creo la carpeta y defino el path en donde se van a descargar los archivos"
         path = os.getcwd()
@@ -58,11 +56,18 @@ class ServerFile(Server):
 
         self.socket.send(b"Recibiendo su archivo, espere...")
         
+    def download(self,data):
 
+        name = data[1].decode('utf-8')
+        with open(self.path + "/"+name, 'rb') as f:
+            while True:
+                byte = f.read(int(self.chunck))
+                if not byte:
+                    self.socket.send(byte)
+                    break
+                self.socket.send(byte)
+                print(self.socket.recv())
 
-
-    def download(self):
-        pass
 
     def sendChunk(self,data):
 
@@ -78,7 +83,6 @@ class ServerFile(Server):
             op = msj[0].decode('utf-8')
             print("operacion recibida:", op)
             self.op[op](msj)
-
 
 
 sv = ServerFile('tcp://*:5002')
