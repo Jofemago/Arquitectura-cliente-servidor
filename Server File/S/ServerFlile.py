@@ -57,16 +57,14 @@ class ServerFile(Server):
         self.socket.send(b"Recibiendo su archivo, espere...")
         
     def download(self,data):
-
+        print("recibiendo descarga")
         name = data[1].decode('utf-8')
         with open(self.path + "/"+name, 'rb') as f:
-            while True:
-                byte = f.read(int(self.chunck))
-                if not byte:
-                    self.socket.send(byte)
-                    break
-                self.socket.send(byte)
-                print(self.socket.recv())
+            f.seek(int( data[2].decode('utf-8')))
+            byte = f.read(int(self.chunck))
+            
+            self.socket.send(byte)
+                
 
 
     def sendChunk(self,data):

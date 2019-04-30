@@ -79,19 +79,24 @@ class ClientFile(Client):
     def download(self,filesha, ext):
 
         name = filesha + "." + ext
-        data = [b"download", name.encode('utf-8')]
+        pos = 0
         with open(name, "ab") as f:
-            self.socket.send_multipart(data)
+            
             while True:
+                data = [b"download", name.encode('utf-8'), str(pos).encode('utf-8')]
+
+                self.socket.send_multipart(data)
 
                 byte = self.socket.recv()
                 if not byte:
                     print("se recibió todo el archivo")
                     break
+                print("recibiendo seek: ", pos)
                 f.write(byte)
-                self.socket.send(b"El cliente esta recibiendo wey")
+                pos += self.chunck
+                
 
-
+    
 
 
     def makeSHAFile(self, dir):
@@ -113,6 +118,6 @@ cl = ClientFile("tcp://127.0.0.1:5002")
 #cl.UploadFile("libro.pdf")
 #cl.UploadFile("texto.txt")
 #cl.UploadFile("thekid.mp4")
-cl.downloadFile('87c9cbd952e93881a2257c7bbf750877f5cc4955')
-#cl.downloadFile('635ff3d30bc02b55ebfe9b50e0af2bff955b55cd')
+#cl.downloadFile('983b2f644610fd9e75fd27c9fe29d4b8896fee0c')
+cl.downloadFile('635ff3d30bc02b55ebfe9b50e0af2bff955b55cd')
 
