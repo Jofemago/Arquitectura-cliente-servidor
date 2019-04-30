@@ -20,7 +20,7 @@ class Client():
 if __name__ == "__main__":
 
 
-    cl = Client("tcp://127.0.0.1:5002")
+    #cl = Client("tcp://127.0.0.1:5002")
     msj = b'Mensaje de prueba'
     print('se envia el mensaje', msj.decode('utf-8'))
     cl.socket.send(msj)

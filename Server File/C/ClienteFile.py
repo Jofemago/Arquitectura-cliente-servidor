@@ -22,6 +22,7 @@ class ClientFile(Client):
         print("solicitando tamaño de envio")
 
         ch = self.socket.recv()
+        print(ch)
         ch = ch.decode('utf-8')
         return int(ch)
 
@@ -79,7 +80,7 @@ class ClientFile(Client):
 
         name = filesha + "." + ext
         data = [b"download", name.encode('utf-8')]
-        with open(name, "wb") as f:
+        with open(name, "ab") as f:
             self.socket.send_multipart(data)
             while True:
 
@@ -109,8 +110,9 @@ class ClientFile(Client):
 cl = ClientFile("tcp://127.0.0.1:5002")
 
 
-#cl.UploadFile("image.png")
-#cl.UploadFile("kid.mp4")
-#cl.downloadFile('9116b54370461ead5aaa10dc5b572d44dbbb7b6f')
-cl.downloadFile('983b2f644610fd9e75fd27c9fe29d4b8896fee0c')
+#cl.UploadFile("libro.pdf")
+#cl.UploadFile("texto.txt")
+#cl.UploadFile("thekid.mp4")
+cl.downloadFile('87c9cbd952e93881a2257c7bbf750877f5cc4955')
+#cl.downloadFile('635ff3d30bc02b55ebfe9b50e0af2bff955b55cd')
 
