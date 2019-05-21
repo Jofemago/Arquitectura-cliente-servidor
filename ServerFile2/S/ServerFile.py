@@ -52,7 +52,7 @@ class ServerFile(Server):
         try:
             os.mkdir(path)
         except OSError:
-            print("Creación de carpeta fallida posiblemente ya existe: ", path)
+            print("Creación de carpeta fallida posiblemente ya existe: ",  path)
         return path
 
 
