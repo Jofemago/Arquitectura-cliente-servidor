@@ -70,6 +70,6 @@ class ServerFile(Server):
             self.op[op](msj)
 
 
-sf = ServerFile(ip_port = "127.0.0.1:5000", ip_proxy = '127.0.0.1:3000', numserver = 0, gb = 1)
+sf = ServerFile(ip_port = "127.0.0.1:5001", ip_proxy = '127.0.0.1:3001', numserver = 0, gb = 1)
 #sf = ServerFile(ip_port = "127.0.0.1:5001", ip_proxy = '127.0.0.1:3000', numserver = 2, gb = 100)
 #sf = ServerFile("*:5001",127.0.0.1:3000)

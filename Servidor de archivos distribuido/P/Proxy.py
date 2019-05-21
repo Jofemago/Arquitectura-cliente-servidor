@@ -11,15 +11,52 @@ class Proxy(Server):
     def __init__(self, ip_puerto):
 
         Server.__init__(self, ip_puerto)
-        self.op = {"registro": self.registroServer}
+        self.op = { "registro": self.registroServer,
+                    "upload": self.configureServers}
 
 
         #creo una lista donde voy a guardar todos los servidores
         self.servers = []
+        self.filesDist = {}
 
 
         #self.path = self.makeDirWork()
         self.run()
+
+
+    def getNumParts(self):
+        """Cuenta el numero de partes disponibles en el servidor"""
+        total = 0
+        for sv in self.servers:
+            total += sv['partes']
+
+        return total
+
+
+    def configureServers(self, datajson):
+
+        res = {}
+        parts = self.getNumParts()
+        if parts < len(datajson['trozos']):
+            res['resp'] = False #no hay archivos cargados no se puede subir nada
+            res['info'] = "no hay servidores disponibles, intentelo mas tarde"
+            self.socket.send_json(res)
+
+        elif datajson['sha'] in self.filesDist:
+
+            res['resp'] = False #no hay archivos cargados no se puede subir nada
+            res['info'] = "Este archivo ya existe, no se permite subir dos veces"
+            self.socket.send_json(res)
+
+        else:
+            #To Do
+            #asignar direccion ip a cada uno de los trozos
+            #almacenarlo en self.servers
+            #subir uno y probar si con el mismo muestra el if del medio
+
+            pass
+
+
 
     def registroServer(self, datajson):
         '''Con esta funcion se logra que un server quede registrado
@@ -40,7 +77,7 @@ class Proxy(Server):
 
 
 
-    def makeDirWork(self):
+    '''def makeDirWork(self):
         "creo la carpeta y defino el path en donde se van a descargar los archivos"
         path = os.getcwd()
         path = path + '/archivos'
@@ -49,7 +86,7 @@ class Proxy(Server):
             os.mkdir(path)
         except OSError:
             print("Creación de carpeta fallida posiblemente ya existe: ", path)
-        return path
+        return path'''
 
     def run(self):
         print("The proxy is running")
@@ -70,4 +107,4 @@ class Proxy(Server):
 
 
 
-proxy = Proxy('tcp://127.0.0.1:3000')
+proxy = Proxy('tcp://127.0.0.1:3001')
