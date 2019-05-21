@@ -7,13 +7,14 @@ class Client():
         ip_puerto: example "tcp://127.0.0.1:5002"
     """
     def __init__(self, ip_puerto):
-        
 
-        
+
+
         self.ip_puerto = ip_puerto
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect(self.ip_puerto)
+        
 
 
 
@@ -26,8 +27,3 @@ if __name__ == "__main__":
     cl.socket.send(msj)
     res = cl.socket.recv()
     print('Respuesta del server', res.decode('utf-8'))
-
-
-    
-    
-
