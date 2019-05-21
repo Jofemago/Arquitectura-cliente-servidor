@@ -34,16 +34,16 @@ class ClientFile(Client):
         sha1 = self.makeSHAFile(dir)
 
         data = [b"exists?", sha1.encode('utf-8')]
-        
+
         self.socket.send_multipart(data)
 
         res = self.socket.recv_multipart()
-        
+
         if res[0].decode('utf-8') == 'False':
             self.upload(dir, name, ext, sha1)
         else:
             print("ese archivo ya existe en el servidor, no se haga coger fastidio papi")
-            
+
 
     def upload(self, dir, name, ext, filesha):
 
@@ -53,7 +53,7 @@ class ClientFile(Client):
                 byte = f.read(self.chunck)
                 if not byte:
                     break
-                data = [b"upload", filesha.encode('utf-8'), ext.encode('utf-8'),byte] 
+                data = [b"upload", filesha.encode('utf-8'), ext.encode('utf-8'),byte]
                 self.socket.send_multipart(data)        #sending chunk to server
                 res = self.socket.recv()
                 print(res.decode('utf-8'))
@@ -63,15 +63,15 @@ class ClientFile(Client):
     def downloadFile(self, filesha):
 
         data = [b"exists?", filesha.encode('utf-8')]
-        
+
         self.socket.send_multipart(data)
 
         res = self.socket.recv_multipart()
-        
+
         if res[0].decode('utf-8') == 'False':
 
             print("no existe el archivo, se cancela la descarga")
-        
+
         else:
             self.download(filesha, res[1].decode('utf-8'))
 
@@ -81,7 +81,7 @@ class ClientFile(Client):
         name = filesha + "." + ext
         pos = 0
         with open(name, "ab") as f:
-            
+
             while True:
                 data = [b"download", name.encode('utf-8'), str(pos).encode('utf-8')]
 
@@ -94,9 +94,9 @@ class ClientFile(Client):
                 print("recibiendo seek: ", pos)
                 f.write(byte)
                 pos += self.chunck
-                
 
-    
+
+
 
 
     def makeSHAFile(self, dir):
@@ -107,8 +107,8 @@ class ClientFile(Client):
                 if not byte:
                     break
                 sha1.update(byte)
-        return sha1.hexdigest()      
-                
+        return sha1.hexdigest()
+
 
 
 
@@ -120,4 +120,3 @@ cl = ClientFile("tcp://127.0.0.1:5002")
 #cl.UploadFile("thekid.mp4")
 #cl.downloadFile('983b2f644610fd9e75fd27c9fe29d4b8896fee0c')
 cl.downloadFile('635ff3d30bc02b55ebfe9b50e0af2bff955b55cd')
-
