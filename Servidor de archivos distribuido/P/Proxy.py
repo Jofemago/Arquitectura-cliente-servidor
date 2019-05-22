@@ -170,8 +170,8 @@ class Proxy(Server):
 
             #subir uno y probar si con el mismo muestra el if del medio
             res['resp'] = True
-            res['info'] = "se guardo el archivo empiece la descarga"
-
+            res['info'] = "se guardo el archivo empiece la carga"
+            #res['hashfile'] = datajson['hashfile']
             res['trozos'] = self.UpdateFilesDist(datajson)
 
             self.socket.send_json(res)

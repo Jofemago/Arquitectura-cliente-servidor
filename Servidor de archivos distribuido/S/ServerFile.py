@@ -12,7 +12,9 @@ class ServerFile(Server):
     def __init__(self ,ip_port = "127.0.0.1:5000", gb = 1 , numparts = None, ip_proxy = '127.0.0.1:3000',numserver = 0 ):
 
         Server.__init__(self, protocol + ip_port, protocol + ip_proxy)
-        self.op = {}#aqui se definen las operaciones que se hacen por cada tipo de mensaje que recibe el server
+
+        self.op = {'upload': self.upload}#aqui se definen las operaciones que se hacen por cada tipo de mensaje que recibe el server
+
         self.numserver = str(numserver)
         self.ip_port =protocol + ip_port#ip y puerto de este servidor
         self.chunksize  =  1024*1024*10  #10MB
@@ -28,7 +30,7 @@ class ServerFile(Server):
         self.numparts  = self.path = self.makeDirWork()
 
         self.connectToProxy()
-        #self.run()
+        self.run()
 
 
 
@@ -56,6 +58,19 @@ class ServerFile(Server):
         return path
 
 
+    #revisar util para upload
+    def upload(self,data):
+        filesha = data[1].decode('utf-8')
+
+        namefile = filesha
+        path = os.getcwd() + '/archivos'+ self.numserver + "/"
+        with open( path + namefile, "ab") as f:
+            f.write(data[2])
+
+        self.socket.send(b"chunk guardado.")
+
+
+
     def run(self):
         print("Server File is running baby's")
         while True:
@@ -71,7 +86,7 @@ class ServerFile(Server):
 
 
 sf = ServerFile(ip_port = "127.0.0.1:5000", ip_proxy = '127.0.0.1:3001', numserver = 0, gb = 0.5)
-sf = ServerFile(ip_port = "127.0.0.1:5001", ip_proxy = '127.0.0.1:3001', numserver = 1, gb = 0.5)
-sf = ServerFile(ip_port = "127.0.0.1:5002", ip_proxy = '127.0.0.1:3001', numserver = 2, gb = 3)
-sf = ServerFile(ip_port = "127.0.0.1:5003", ip_proxy = '127.0.0.1:3001', numserver = 3, gb = 4)
-sf = ServerFile(ip_port = "127.0.0.1:5004", ip_proxy = '127.0.0.1:3001', numserver = 4, gb = 100)
+#sf = ServerFile(ip_port = "127.0.0.1:5001", ip_proxy = '127.0.0.1:3001', numserver = 1, gb = 0.5)
+#sf = ServerFile(ip_port = "127.0.0.1:5002", ip_proxy = '127.0.0.1:3001', numserver = 2, gb = 3)
+#sf = ServerFile(ip_port = "127.0.0.1:5003", ip_proxy = '127.0.0.1:3001', numserver = 3, gb = 4)
+#sf = ServerFile(ip_port = "127.0.0.1:5004", ip_proxy = '127.0.0.1:3001', numserver = 4, gb = 100)
