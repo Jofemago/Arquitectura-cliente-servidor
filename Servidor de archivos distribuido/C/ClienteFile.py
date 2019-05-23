@@ -7,6 +7,7 @@ import sys
 
 protocol = 'tcp://'
 path = os.getcwd() +'/archivos/'
+path2 = os.getcwd() + '/descargas/'
 
 
 from Client import Client
@@ -92,9 +93,8 @@ class ClienteFile(Client):
 
         for i in range(len(data['trozos'])):
             self.upload(i, file,data)
-
-
-
+        print("hash para la descarga: ", data["hashfile"])
+        #print(data)
 
 
     def getServerUpload(self, file):
@@ -119,13 +119,51 @@ class ClienteFile(Client):
             print(resp['info'])
             #print("elementos enviados ", len(x['trozos'])," :\n", x['trozos'])
             #print("elementos enviados ", len(resp['trozos'])," :\n",resp['trozos'])
-            ## TODO:
-                # empezar carga
+            
+            #enviar todos los elementos
             self.uploadAllFiles( resp,file)
 
         else:
             print(resp['info'])
 
+
+    def download(self, hashserver, name):
+        #print(hashserver)
+        #print(name)
+        print("conectar con: "+ hashserver['server'])
+        print("descargando archivo "+ name)
+        socketFiles = self.context.socket(zmq.REQ) # creo socket
+        socketFiles.connect(hashserver['server'])
+
+
+        datas = [b"download", hashserver['hashpart'].encode('utf-8')]
+        socketFiles.send_multipart(datas)        #sending chunk to server
+        res = socketFiles.recv()
+
+
+        #print(res.decode('utf-8'))
+
+        with open(path2 + name, "ab") as f:
+
+            f.write(res)
+            
+        f.close()
+
+    def downloadAllFiles(self, data, hasfile):
+        '''data = {"hasfile": ListToDownload,
+                "len": lenListToDownload,#[{haspart:xxx, server:xx}]
+                "resp": True,
+                "info":"entrega exitosisa debe descargar estos trozos :  " + str(lenListToDownload),
+                "name": name
+            }
+        '''
+        #assert(data['hashname'] == hashfile)
+        for e in data["hashfile"]:
+
+            self.download(e, data["name"])
+        
+        #print(data)
+        
 
 
     def getServerDownload(self, file):
@@ -137,17 +175,12 @@ class ClienteFile(Client):
         self.socket.send_json(x)
 
         res = self.socket.recv_json()
-        print(res)
+        #print(res)
 
-        '''res = {"hasfile": ListToDownload,
-                "len": lenListToDownload,#[{haspart:xxx, server:xx}]
-                "resp": True,
-                "info":"entrega exitosisa debe descargar estos trozos :  " + str(lenListToDownload),
-                "name": name
-            }
-        '''
-        #TODO
-            #descargar archivos y unirlos
+        if res['resp']:
+            self.downloadAllFiles(res, file)
+        else:
+            print(res['info'])
 
 
 
@@ -155,9 +188,11 @@ class ClienteFile(Client):
 
 cl = ClienteFile('tcp://127.0.0.1:3001')
 
-cl.getServerUpload('ce.pdf')
+#cl.getServerUpload('ce.pdf')
 #cl.getServerUpload('lb.pdf')
 #cl.getServerUpload('thekid.mp4')
 
 #cl.getServerDownload('635ff3d30bc02b55ebfe9b50e0af2bff955b55cd')
 #cl.getServerDownload('8cb79739ef1afe81762c4c30ed338229bd8b6843')
+cl.getServerDownload('983b2f644610fd9e75fd27c9fe29d4b8896fee0c')
+

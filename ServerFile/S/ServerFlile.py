@@ -5,8 +5,8 @@ import os
 from Server import Server
 
 class ServerFile(Server):
-    
-    
+
+
     def __init__(self, ip_puerto, chunck = 1000000):
 
         Server.__init__(self, ip_puerto)
@@ -14,12 +14,12 @@ class ServerFile(Server):
         self.chunck = str(chunck)
         self.path = self.makeDirWork()
         self.run() #corro el servidor
-        
+
     def makeDirWork(self):
         "creo la carpeta y defino el path en donde se van a descargar los archivos"
         path = os.getcwd()
         path = path + '/archivos'
-        
+
         try:
             os.mkdir(path)
         except OSError:
@@ -38,7 +38,7 @@ class ServerFile(Server):
         """reviso si existe el archivo en el server
          devuelvo tupla, boolean, string donde el string es la extension del archivo"""
         name,ext = None,None
-        for root, dirs, files in os.walk(self.path):  
+        for root, dirs, files in os.walk(self.path):
             for filename in files:
                 name,ext = filename.split(".")
                 if(name == sha1):
@@ -55,16 +55,16 @@ class ServerFile(Server):
             f.write(data[3])
 
         self.socket.send(b"Recibiendo su archivo, espere...")
-        
+
     def download(self,data):
         print("recibiendo descarga")
         name = data[1].decode('utf-8')
         with open(self.path + "/"+name, 'rb') as f:
-            f.seek(int( data[2].decode('utf-8')))
+            f.seek(int( data[2].decode('utf-8')))#pos
             byte = f.read(int(self.chunck))
-            
+
             self.socket.send(byte)
-                
+
 
 
     def sendChunk(self,data):
@@ -74,7 +74,7 @@ class ServerFile(Server):
     def run(self):
         print("Server File is running baby's")
         while True:
-            
+
             msj = self.socket.recv_multipart()
 
             assert(len(msj))#debe haber mas de un elemento

@@ -13,7 +13,7 @@ class ServerFile(Server):
 
         Server.__init__(self, protocol + ip_port, protocol + ip_proxy)
 
-        self.op = {'upload': self.upload}#aqui se definen las operaciones que se hacen por cada tipo de mensaje que recibe el server
+        self.op = {'upload': self.upload,'download':self.download}#aqui se definen las operaciones que se hacen por cada tipo de mensaje que recibe el server
 
         self.numserver = str(numserver)
         self.ip_port =protocol + ip_port#ip y puerto de este servidor
@@ -70,6 +70,17 @@ class ServerFile(Server):
         self.socket.send(b"chunk guardado.")
 
 
+    def download(self, data):
+
+        filesha = data[1].decode('utf-8')
+
+        namefile = filesha
+        path = os.getcwd() + '/archivos'+ self.numserver + "/"
+        with open( path + namefile, "rb") as f:
+            byte = f.read()
+            self.socket.send(byte)
+
+
 
     def run(self):
         print("Server File is running baby's")
@@ -85,8 +96,8 @@ class ServerFile(Server):
             self.op[op](msj)
 
 
-sf = ServerFile(ip_port = "127.0.0.1:5000", ip_proxy = '127.0.0.1:3001', numserver = 0, gb = 0.5)
+#sf = ServerFile(ip_port = "127.0.0.1:5000", ip_proxy = '127.0.0.1:3001', numserver = 0, gb = 0.5)
 #sf = ServerFile(ip_port = "127.0.0.1:5001", ip_proxy = '127.0.0.1:3001', numserver = 1, gb = 0.5)
 #sf = ServerFile(ip_port = "127.0.0.1:5002", ip_proxy = '127.0.0.1:3001', numserver = 2, gb = 3)
 #sf = ServerFile(ip_port = "127.0.0.1:5003", ip_proxy = '127.0.0.1:3001', numserver = 3, gb = 4)
-#sf = ServerFile(ip_port = "127.0.0.1:5004", ip_proxy = '127.0.0.1:3001', numserver = 4, gb = 100)
+sf = ServerFile(ip_port = "127.0.0.1:5004", ip_proxy = '127.0.0.1:3001', numserver = 4, gb = 100)

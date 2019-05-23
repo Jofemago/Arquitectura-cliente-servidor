@@ -57,20 +57,21 @@ class Proxy(Server):
             lenListToDownload = len(ListToDownload)
             name = self.filesDistNames[datajson["hashfile"]]
             print("descargando archivo: ", datajson["hashfile"], " name: ",name )
-            res = {"hasfile": ListToDownload,
+            res = {"hashfile": ListToDownload,
                     "len": lenListToDownload,#[{haspart:xxx, server:xx}]
                     "resp": True,
                     "info":"entrega exitosisa debe descargar estos trozos :  " + str(lenListToDownload),
-                    "name": name
+                    "name": name,
+                    "hashname": datajson["hashfile"]
                 }
             self.socket.send_json(res)
 
         else:
             print("intento de descarga, no existe el archivo")
-            res = {"hasfile": None,
+            res = {"hashfile": None,
                     "len": None,
                     "resp": False,
-                    "info":"entrega fallida: " + str(0)
+                    "info":"entrega fallida: el archivo no existe dentro de la red distribuida" 
                     }
             self.socket.send_json(res)
 
@@ -171,7 +172,7 @@ class Proxy(Server):
             #subir uno y probar si con el mismo muestra el if del medio
             res['resp'] = True
             res['info'] = "se guardo el archivo empiece la carga"
-            #res['hashfile'] = datajson['hashfile']
+            res['hashfile'] = datajson['hashfile']
             res['trozos'] = self.UpdateFilesDist(datajson)
 
             self.socket.send_json(res)
